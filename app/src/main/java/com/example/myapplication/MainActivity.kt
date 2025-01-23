@@ -22,6 +22,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.myapplication.ui.CharacteDetailsScreen
+import com.example.myapplication.ui.CharacterEpisodesScreen
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.example.mylibrary.KtorClient
 
@@ -51,7 +52,7 @@ class MainActivity : ComponentActivity() {
                             arguments = listOf(navArgument("characterId"){type = NavType.IntType})
                         ){ backStackEntry->
                             val characterId = backStackEntry.arguments?.getInt("characterId") ?:-1
-                            CharacterEpisodesScreen(characterId)
+                            CharacterEpisodesScreen(characterId,ktorClient)
                         }
                     }
                 }
@@ -60,12 +61,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun CharacterEpisodesScreen(characterId:Int){
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-        Text(text = "Episodes Count For Character $characterId", fontSize = 20.sp)
-    }
-}
+
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {

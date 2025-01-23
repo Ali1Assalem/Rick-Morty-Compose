@@ -1,4 +1,4 @@
-package com.example.myapplication.ui
+package com.example.myapplication.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text

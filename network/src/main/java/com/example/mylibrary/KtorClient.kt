@@ -2,7 +2,10 @@ package com.example.mylibrary
 
 import com.androidfactory.network.models.domain.Character
 import com.androidfactory.network.models.remote.RemoteCharacter
+import com.androidfactory.network.models.remote.RemoteEpisode
 import com.androidfactory.network.models.remote.toDomainCharacter
+import com.androidfactory.network.models.remote.toDomainEpisode
+import com.example.mylibrary.domain.Episode
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.okhttp.OkHttp
@@ -40,6 +43,15 @@ class KtorClient {
                 .body<RemoteCharacter>()
                 .toDomainCharacter()
                 .also { characterCache[id]=it }
+        }
+    }
+
+    suspend fun getEpisodes(episodesIds:List<Int>):ApiOperation<List<Episode>>{
+        val idsCommaSeparated = episodesIds.joinToString(",")
+        return safeApiCall{
+            client.get("episode/$idsCommaSeparated")
+                .body<List<RemoteEpisode>>()
+                .map { it.toDomainEpisode() }
         }
     }
 
