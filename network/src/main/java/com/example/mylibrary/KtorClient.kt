@@ -5,7 +5,10 @@ import com.androidfactory.network.models.remote.RemoteCharacter
 import com.androidfactory.network.models.remote.RemoteEpisode
 import com.androidfactory.network.models.remote.toDomainCharacter
 import com.androidfactory.network.models.remote.toDomainEpisode
+import com.example.mylibrary.domain.CharacterPage
 import com.example.mylibrary.domain.Episode
+import com.example.mylibrary.remote.RemoteCharacterPage
+import com.example.mylibrary.remote.toDomainCharacterPage
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.okhttp.OkHttp
@@ -46,12 +49,33 @@ class KtorClient {
         }
     }
 
-    suspend fun getEpisodes(episodesIds:List<Int>):ApiOperation<List<Episode>>{
-        val idsCommaSeparated = episodesIds.joinToString(",")
+    suspend fun getEpisode(episodesId:Int):ApiOperation<Episode>{
         return safeApiCall{
-            client.get("episode/$idsCommaSeparated")
-                .body<List<RemoteEpisode>>()
-                .map { it.toDomainEpisode() }
+            client.get("episode/$episodesId")
+                .body<RemoteEpisode>()
+                .toDomainEpisode()
+        }
+    }
+
+    suspend fun getEpisodes(episodesIds:List<Int>):ApiOperation<List<Episode>>{
+        return if(episodesIds.size == 1){
+            getEpisode(episodesIds[0]).mapSuccess { listOf(it) }
+        }
+        else{
+            val idsCommaSeparated = episodesIds.joinToString(",")
+            safeApiCall{
+                client.get("episode/$idsCommaSeparated")
+                    .body<List<RemoteEpisode>>()
+                    .map { it.toDomainEpisode() }
+            }
+        }
+
+    }
+
+    suspend fun getCharactersByPage(pageNumber:Int):ApiOperation<CharacterPage>{
+        return safeApiCall{
+            client.get("character/?page=$pageNumber")
+                .body<RemoteCharacterPage>().toDomainCharacterPage()
         }
     }
 
