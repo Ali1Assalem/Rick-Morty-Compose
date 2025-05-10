@@ -105,7 +105,7 @@ fun HomeScreen(onCharacterSelected:(Int) -> Unit,
             LoadingState()
         }
         is HomeViewState.GridDisplay ->{
-            LazyVerticalGrid(
+            LazyVerticalGrid (
                 state = scrollState,
                 contentPadding = PaddingValues(all = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),

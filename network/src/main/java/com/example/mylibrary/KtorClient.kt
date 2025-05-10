@@ -1,10 +1,13 @@
 package com.example.mylibrary
 
+import com.androidfactory.network.domain.EpisodePage
 import com.androidfactory.network.models.domain.Character
 import com.androidfactory.network.models.remote.RemoteCharacter
 import com.androidfactory.network.models.remote.RemoteEpisode
+import com.androidfactory.network.models.remote.RemoteEpisodePage
 import com.androidfactory.network.models.remote.toDomainCharacter
 import com.androidfactory.network.models.remote.toDomainEpisode
+import com.androidfactory.network.models.remote.toDomainEpisodePage
 import com.example.mylibrary.domain.CharacterPage
 import com.example.mylibrary.domain.Episode
 import com.example.mylibrary.remote.RemoteCharacterPage
@@ -35,7 +38,7 @@ class KtorClient {
                 ignoreUnknownKeys = true
             })
         }
-    }
+    }//eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 
     private var characterCache = mutableMapOf<Int,Character>()
 
@@ -69,7 +72,18 @@ class KtorClient {
                     .map { it.toDomainEpisode() }
             }
         }
+    }
 
+    suspend fun getEpisodesByPage(pageIndex: Int): ApiOperation<EpisodePage> {
+        return safeApiCall {
+            client.get("episode") {
+                url {
+                    parameters.append("page", pageIndex.toString())
+                }
+            }
+                .body<RemoteEpisodePage>()
+                .toDomainEpisodePage()
+        }
     }
 
     suspend fun getCharactersByPage(pageNumber:Int):ApiOperation<CharacterPage>{
