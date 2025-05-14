@@ -139,7 +139,7 @@ private fun NavigationHost(
         .padding(innerPadding)
     ){
         composable("home_screen"){
-            HomeScreen( onCharacterSelected = { characterId->
+            HomeScreen( onCharacterSelected = { characterId ->
                 navController.navigate("characterDetails/$characterId")
             })
         }
@@ -187,4 +187,3 @@ fun GreetingPreview() {
         Greeting("Android")
     }
 }
-

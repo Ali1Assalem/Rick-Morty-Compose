@@ -38,7 +38,7 @@ class KtorClient {
                 ignoreUnknownKeys = true
             })
         }
-    }//eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee12
+    }//eeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 
     private var characterCache = mutableMapOf<Int,Character>()
 
@@ -58,7 +58,7 @@ class KtorClient {
                 .body<RemoteEpisode>()
                 .toDomainEpisode()
         }
-    }
+    } 
 
     suspend fun getEpisodes(episodesIds:List<Int>):ApiOperation<List<Episode>>{
         return if(episodesIds.size == 1){
@@ -85,6 +85,31 @@ class KtorClient {
                 .toDomainEpisodePage()
         }
     }
+
+    suspend fun getAllEpisodes(): ApiOperation<List<Episode>> {
+        val data = mutableListOf<Episode>()
+        var exception: Exception? = null
+
+        getEpisodesByPage(pageIndex = 1).onSuccess { firstPage ->
+            val totalPageCount = firstPage.info.pages
+            data.addAll(firstPage.episodes)
+
+            repeat(totalPageCount - 1) { index ->
+                getEpisodesByPage(pageIndex = index + 2).onSuccess { nextPage ->
+                    data.addAll(nextPage.episodes)
+                }.onFailure { error ->
+                    exception = error
+                }
+
+                if (exception != null) { return@onSuccess }
+            }
+        }.onFailure {
+            exception = it
+        }
+
+        return exception?.let { ApiOperation.Failure(it) } ?: ApiOperation.Success(data)
+    }
+
 
     suspend fun getCharactersByPage(pageNumber:Int):ApiOperation<CharacterPage>{
         return safeApiCall{
@@ -117,6 +142,7 @@ sealed interface ApiOperation<T> {
     suspend fun onSuccess(block: suspend (T) -> Unit): ApiOperation<T> {
         if (this is Success) block(data)
         return this
+
     }
 
     fun onFailure(block: (Exception) -> Unit): ApiOperation<T> {
